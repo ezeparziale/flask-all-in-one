@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>{% block title %} Detail user {% endblock %}</h1>
+
+<p>User create id: {{ user }}</p>
+
+<a class="btn btn-primary" href="{{url_for('user_list')}}">Back</a>
+{% endblock %}

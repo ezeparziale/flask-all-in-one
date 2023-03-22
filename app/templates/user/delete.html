@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>{% block title %} Delete user {% endblock %}</h1>
+
+<p>¿Are you sure you want to delete this user: {{ user.email }}?</p>
+
+<form method="POST">
+    {{ form.hidden_tag() }}
+
+    <div class="float-start mt-3">
+        {{ form.submit(class="btn btn-danger") }}
+        <a class="btn btn-secondary" href="{{ url_for('user_list') }}">Cancel</a>
+    </div>
+</form>
+{% endblock %}

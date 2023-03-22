@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>{% block title %} Protected {% endblock %}</h1>
+
+<p>Logged as: {{ current_user.email }}</p>
+
+<div class="mt-4">
+    <a href="{{url_for('logout')}}">
+        <button class="btn btn-danger" type="submit">Logout</button>
+    </a>
+</div>
+
+<div class="mt-4">
+    <a href="{{url_for('user_list')}}">
+        <button class="btn btn-primary" type="submit">Users list</button>
+    </a>
+</div>
+
+<div class="mt-4">
+    <a href="{{url_for('user_create')}}">
+        <button class="btn btn-primary" type="submit">Create user</button>
+    </a>
+</div>
+{% endblock %}

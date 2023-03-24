@@ -4,7 +4,7 @@
 
 <h1>{% block title %} Chat {% endblock %}</h1>
 
-<p>Logged as: {{ current_user.email }}</p>
+<p>Logged as: <span class="badge text-bg-primary">{{ current_user.email }}</span></p>
 
 <form method="POST">
     {{ form.hidden_tag() }}

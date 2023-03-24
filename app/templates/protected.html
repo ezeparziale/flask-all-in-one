@@ -4,7 +4,7 @@
 
 <h1>{% block title %} Protected {% endblock %}</h1>
 
-<p>Logged as: {{ current_user.email }}</p>
+<p>Logged as: <span class="badge text-bg-primary">{{ current_user.email }}</span></p>
 
 <div class="mt-4">
     <a href="{{url_for('logout')}}">

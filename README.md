@@ -36,6 +36,7 @@ flask run --debug
 - Detail user
 - Delete user
 - Include a database using SQLite.
+- Bootstrap 5.3
 
 ## :pushpin: Dependencies
 

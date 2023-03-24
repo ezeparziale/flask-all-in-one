@@ -9,9 +9,13 @@
 <form method="POST">
     {{ form.hidden_tag() }}
 
-    {{ form.public_submit(class="btn btn-primary") }}
+    <h3 class="muted mt-3">Access to a public room</h3>
 
-    <div class="form-group mt-3">
+    {{ form.public_submit(class="btn btn-primary mt-3") }}
+
+    <h3 class="muted mt-4">Create a private room</h3>
+
+    <div class="form-group">
         {{ form.room.label(class="form-control-label") }}
         {% if form.room.errors %}
             {{ form.room(class="form-control form-control-lg is-invalid") }}
@@ -23,9 +27,11 @@
         {% endif %}
     </div>
 
-    {{ form.create_room_submit(class="btn btn-primary") }}
+    {{ form.create_room_submit(class="btn btn-primary mt-3") }}
 
-    <div class="form-group mt-3">
+    <h3 class="muted mt-4">Sent broadcast message</h3>
+
+    <div class="form-group">
         {{ form.message.label(class="form-control-label") }}
         {% if form.message.errors %}
             {{ form.message(class="form-control form-control-lg is-invalid") }}
@@ -37,8 +43,10 @@
         {% endif %}
     </div>
 
-    {{ form.broadcast_submit(class="btn btn-primary") }}
+    {{ form.broadcast_submit(class="btn btn-primary mt-3") }}
 
 </form>
+
+<a class="btn btn-outline-primary mt-4" href="{{url_for('protected')}}">Exit</a>
 
 {% endblock %}

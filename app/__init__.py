@@ -86,7 +86,6 @@ class ChatForm(FlaskForm):
 
 
 # Auth
-@app.route("/", methods=["GET", "POST"])
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if current_user.is_authenticated:
@@ -104,6 +103,11 @@ def login():
     return render_template("login.html", form=form)
 
 
+@app.route("/")
+def index():
+    return render_template("index.html")
+
+
 @app.route("/protected")
 @login_required
 def protected():
@@ -113,7 +117,7 @@ def protected():
 @app.route("/logout")
 def logout():
     logout_user()
-    return render_template("logout.html")
+    return render_template("index.html")
 
 
 # Errors

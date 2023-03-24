@@ -16,6 +16,10 @@
 </div>
 {% endfor %}
 
-<a class="btn btn-primary mt-4" href="{{url_for('protected')}}" role="button">Back</a>
+
+<div class="float-start mt-3">
+    <a class="btn btn-primary" href="{{url_for('user_create')}}" role="button">Create user</a>
+    <a class="btn btn-secondary" href="{{url_for('protected')}}" role="button">Back</a>
+</div>
 
 {% endblock %}

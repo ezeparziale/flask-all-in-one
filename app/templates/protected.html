@@ -13,14 +13,10 @@
 </div>
 
 <div class="mt-4">
-    <a href="{{url_for('user_list')}}">
-        <button class="btn btn-primary" type="submit">Users list</button>
-    </a>
+    <a class="btn btn-primary" href="{{url_for('user_list')}}" role="button">Users list</a>
 </div>
 
 <div class="mt-4">
-    <a href="{{url_for('user_create')}}">
-        <button class="btn btn-primary" type="submit">Create user</button>
-    </a>
+    <a class="btn btn-primary" href="{{url_for('user_create')}}" role="button">Create user</a>
 </div>
 {% endblock %}

@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>{% block title %} Chat {% endblock %}</h1>
+
+<p>Logged as: {{ current_user.email }}</p>
+
+<form method="POST">
+    {{ form.hidden_tag() }}
+
+    {{ form.public_submit(class="btn btn-primary") }}
+
+    <div class="form-group mt-3">
+        {{ form.room.label(class="form-control-label") }}
+        {% if form.room.errors %}
+            {{ form.room(class="form-control form-control-lg is-invalid") }}
+            {% for error in form.room.errors %}
+                <span>{{ error }}</span>
+            {% endfor%}
+        {% else %}
+            {{ form.room(class="form-control form-control-lg") }}
+        {% endif %}
+    </div>
+
+    {{ form.create_room_submit(class="btn btn-primary") }}
+
+    <div class="form-group mt-3">
+        {{ form.message.label(class="form-control-label") }}
+        {% if form.message.errors %}
+            {{ form.message(class="form-control form-control-lg is-invalid") }}
+            {% for error in form.message.errors %}
+                <span>{{ error }}</span>
+            {% endfor%}
+        {% else %}
+            {{ form.message(class="form-control form-control-lg") }}
+        {% endif %}
+    </div>
+
+    {{ form.broadcast_submit(class="btn btn-primary") }}
+
+</form>
+
+{% endblock %}

@@ -1,8 +1,9 @@
-from flask import Flask, render_template, redirect, url_for, flash
+from flask import Flask, render_template, redirect, url_for, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Email, Length, EqualTo
+from flask_socketio import SocketIO, emit, send, join_room, leave_room
 
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -26,6 +27,9 @@ db = SQLAlchemy(app)
 # Flask Login
 login_manager = LoginManager()
 login_manager.init_app(app)
+
+# SocketIO
+socketio = SocketIO(app)
 
 
 # Models
@@ -72,6 +76,15 @@ class CreateUserForm(FlaskForm):
 
 class DeleteUserForm(FlaskForm):
     submit = SubmitField("Delete User")
+
+
+class ChatForm(FlaskForm):
+    public_submit = SubmitField("Public")
+    room = StringField("Room", validators=[])
+    create_room_submit = SubmitField("Create")
+    message = StringField("Message", validators=[])
+    broadcast_submit = SubmitField("Send")
+
 
 # Auth
 @app.route("/", methods=["GET", "POST"])
@@ -167,3 +180,67 @@ def user_delete(id):
         return redirect(url_for("user_list"))
 
     return render_template("user/delete.html", user=user, form=form)
+
+
+# Chat
+@app.route("/chat", methods=["GET", "POST"])
+@login_required
+def chat():
+    form = ChatForm()
+
+    if form.validate_on_submit():
+        if form.public_submit.data:
+            return redirect(url_for("public"))
+
+        if form.broadcast_submit.data:
+            data = {
+                "email": current_user.email,  # type: ignore
+                "message": form.message.data,
+            }
+            emit("broadcast", data, broadcast=True, namespace="/")
+
+        if form.create_room_submit.data:
+            return redirect(url_for("private", room=form.room.data))
+
+    return render_template("chat/chat.html", form=form)
+
+
+@app.route("/public")
+@login_required
+def public():
+    room = "public"
+    session["room"] = room
+    return render_template("chat/public.html", room=room)
+
+
+@app.route("/private/<room>")
+@login_required
+def private(room: str):
+    session["room"] = room
+    return render_template("chat/private.html", room=room)
+
+
+@socketio.on("message")
+def handle_message(msg):
+    room = session.get("room")
+    data = {
+        "email": current_user.email,  # type: ignore
+        "message": msg["message"],
+    }
+    print(f"Received message: {msg['message']} from room: {room}")
+    send(message=data, to=room)  # type: ignore
+
+
+@socketio.on("connect")
+def connect():
+    room = session.get("room")
+    join_room(room)
+    send({"email": current_user.email, "message": "has entered the room"}, to=room)  # type: ignore
+
+
+@socketio.on("disconnect")
+def disconnect():
+    room = session.get("room")
+    leave_room(room)
+    send({"email": current_user.email, "message": "has left the room"}, to=room)  # type: ignore
+    print(f"{current_user.email} has left the room {room}")  # type: ignore

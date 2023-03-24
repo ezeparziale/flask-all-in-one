@@ -1,20 +1,18 @@
-from flask import Flask, render_template, redirect, url_for, flash, session
-from flask_sqlalchemy import SQLAlchemy
-from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
-from wtforms.validators import DataRequired, Email, Length, EqualTo
-from flask_socketio import SocketIO, emit, send, join_room, leave_room
-
-from werkzeug.security import generate_password_hash, check_password_hash
-
+from flask import Flask, flash, redirect, render_template, session, url_for
 from flask_login import (
     LoginManager,
     UserMixin,
-    login_required,
-    logout_user,
     current_user,
+    login_required,
     login_user,
+    logout_user,
 )
+from flask_socketio import SocketIO, emit, join_room, leave_room, send
+from flask_sqlalchemy import SQLAlchemy
+from flask_wtf import FlaskForm
+from werkzeug.security import check_password_hash, generate_password_hash
+from wtforms import PasswordField, StringField, SubmitField
+from wtforms.validators import DataRequired, Email, EqualTo, Length
 
 # Flask
 app = Flask(__name__)
@@ -40,11 +38,11 @@ class User(db.Model, UserMixin):
 
     def __repr__(self) -> str:
         return super().__repr__()
-    
+
     def save(self):
         db.session.add(self)
         db.session.commit()
-    
+
     def delete(self):
         db.session.delete(self)
         db.session.commit()
@@ -74,6 +72,7 @@ class CreateUserForm(FlaskForm):
     )
     submit = SubmitField("Create")
 
+
 class DeleteUserForm(FlaskForm):
     submit = SubmitField("Delete User")
 
@@ -90,7 +89,7 @@ class ChatForm(FlaskForm):
 @app.route("/", methods=["GET", "POST"])
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    if current_user.is_authenticated: # type: ignore
+    if current_user.is_authenticated:
         return redirect(url_for("protected"))
 
     form = LoginForm()
@@ -194,7 +193,7 @@ def chat():
 
         if form.broadcast_submit.data:
             data = {
-                "email": current_user.email,  # type: ignore
+                "email": current_user.email,
                 "message": form.message.data,
             }
             emit("broadcast", data, broadcast=True, namespace="/")
@@ -224,23 +223,25 @@ def private(room: str):
 def handle_message(msg):
     room = session.get("room")
     data = {
-        "email": current_user.email,  # type: ignore
+        "email": current_user.email,
         "message": msg["message"],
     }
     print(f"Received message: {msg['message']} from room: {room}")
-    send(message=data, to=room)  # type: ignore
+    send(message=data, to=room)
 
 
 @socketio.on("connect")
 def connect():
     room = session.get("room")
     join_room(room)
-    send({"email": current_user.email, "message": "has entered the room"}, to=room)  # type: ignore
+    data = {"email": current_user.email, "message": "has entered the room"}
+    send(data, to=room)
 
 
 @socketio.on("disconnect")
 def disconnect():
     room = session.get("room")
     leave_room(room)
-    send({"email": current_user.email, "message": "has left the room"}, to=room)  # type: ignore
-    print(f"{current_user.email} has left the room {room}")  # type: ignore
+    data = {"email": current_user.email, "message": "has left the room"}
+    send(data, to=room)
+    print(f"{current_user.email} has left the room {room}")

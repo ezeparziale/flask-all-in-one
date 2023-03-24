@@ -37,6 +37,9 @@ flask run --debug
 - Delete user
 - Include a database using SQLite.
 - Bootstrap 5.3
+- Chat public room
+- Chat private room
+- Broadcast message
 
 ## :pushpin: Dependencies
 
@@ -44,7 +47,8 @@ flask run --debug
 - Flask-Login
 - Flask-SQLAlchemy
 - Flask-WTF
+- Flask-SocketIO
 
 ## :memo: To do
 
-- Include chat using Flask-SocketIO
+- Improve code chat

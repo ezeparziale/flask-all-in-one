@@ -11,7 +11,7 @@ from flask_socketio import SocketIO, emit, join_room, leave_room, send
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 from werkzeug.security import check_password_hash, generate_password_hash
-from wtforms import PasswordField, StringField, SubmitField
+from wtforms import PasswordField, StringField, SubmitField, BooleanField
 from wtforms.validators import DataRequired, Email, EqualTo, Length
 
 # Flask
@@ -61,6 +61,7 @@ def user_loader(user_id):
 class LoginForm(FlaskForm):
     email = StringField("Email", validators=[DataRequired(), Email()])
     password = PasswordField("Password", validators=[DataRequired(), Length(min=6)])
+    remember_me = BooleanField(label="Remember me")
     submit = SubmitField("Log in")
 
 
@@ -95,7 +96,7 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         if user and check_password_hash(user.password, form.password.data):
-            login_user(user)
+            login_user(user, remember=form.remember_me.data)
             return redirect(url_for("protected"))
         else:
             flash(message="Login failed; Invalid email or password.", category="danger")

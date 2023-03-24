@@ -35,6 +35,13 @@
         {% endif %}
     </div>
 
+    <div class="form-group mt-3">
+        {{ form.remember_me(class="form-check-input") }}
+        <label class="form-check-label" for="flexCheckDefault">
+            {{ form.remember_me.label(class="form-control-label") }}
+        </label>
+    </div>
+
     <div class="float-start mt-3">
         {{ form.submit(class="btn btn-primary") }}
         <a class="btn btn-outline-primary" href="{{url_for('user_create')}}" role="button">Create user</a>

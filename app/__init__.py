@@ -1,4 +1,4 @@
-from flask import Flask, flash, redirect, render_template, session, url_for
+from flask import Flask, flash, redirect, render_template, request, session, url_for
 from flask_login import (
     LoginManager,
     UserMixin,
@@ -11,7 +11,7 @@ from flask_socketio import SocketIO, emit, join_room, leave_room, send
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 from werkzeug.security import check_password_hash, generate_password_hash
-from wtforms import PasswordField, StringField, SubmitField, BooleanField
+from wtforms import BooleanField, PasswordField, StringField, SubmitField
 from wtforms.validators import DataRequired, Email, EqualTo, Length
 
 # Flask
@@ -57,6 +57,11 @@ def user_loader(user_id):
     return User.query.get(user_id)
 
 
+@login_manager.unauthorized_handler
+def unauthorized():
+    return redirect(url_for("login", next=request.path))
+
+
 # Forms
 class LoginForm(FlaskForm):
     email = StringField("Email", validators=[DataRequired(), Email()])
@@ -90,14 +95,17 @@ class ChatForm(FlaskForm):
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for("protected"))
+        return redirect(url_for("index"))
 
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         if user and check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember_me.data)
-            return redirect(url_for("protected"))
+            next = request.args.get("next")
+            if next is None or not next.startswith("/"):
+                next = url_for("index")
+            return redirect(next)
         else:
             flash(message="Login failed; Invalid email or password.", category="danger")
 

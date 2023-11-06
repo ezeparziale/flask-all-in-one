@@ -160,9 +160,7 @@ def user_create():
     if form.validate_on_submit():
         user_exist = User.query.filter_by(email=form.email.data).first()
         if not user_exist:
-            hashed_password = generate_password_hash(
-                form.password.data, method="sha256"
-            )
+            hashed_password = generate_password_hash(form.password.data)
             new_user = User(email=form.email.data, password=hashed_password)
             new_user.save()
             flash("User created successfully", category="success")
